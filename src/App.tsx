@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Component, type ErrorInfo, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
@@ -28,6 +28,24 @@ interface SessionRecord {
   benchmarkId?: string;
   result?: RAFResult;
   graph: { nodes: GraphNode[]; links: GraphLink[] };
+}
+
+// Error boundary for D3 graph crashes — prevents blank page
+class GraphErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, info: ErrorInfo) { console.warn('Graph error caught:', error, info); }
+  componentDidUpdate(prevProps: { children: ReactNode }) {
+    if (prevProps.children !== this.props.children && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div className="flex h-full items-center justify-center text-xs text-[#6b7280]">Graph rendering…</div>;
+    }
+    return this.props.children;
+  }
 }
 
 const STORAGE_KEY = 'raf-demo-sessions';
@@ -605,7 +623,9 @@ export default function App() {
                   <div className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[#6b7280]">D3.js</div>
                 </div>
                 <div className="h-[320px] rounded-[20px] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.08),transparent_35%),#0a0f1a] xl:h-[calc(100%-40px)]">
-                  <ExecutionGraph nodes={activeSession?.graph.nodes ?? []} links={activeSession?.graph.links ?? []} />
+                  <GraphErrorBoundary>
+                    <ExecutionGraph nodes={activeSession?.graph.nodes ?? []} links={activeSession?.graph.links ?? []} />
+                  </GraphErrorBoundary>
                 </div>
               </div>
 

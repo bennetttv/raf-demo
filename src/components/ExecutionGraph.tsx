@@ -185,8 +185,15 @@ export function ExecutionGraph({ nodes, links }: Props) {
       .attr('r', (d) => d.radius)
       .attr('filter', (d) => (d.type === 'result' ? 'url(#result-glow)' : null));
 
-    (simulationRef.current.force('link') as d3.ForceLink<GraphNode, GraphLink>).links(graphData.links);
-    simulationRef.current.nodes(graphData.nodes);
+    // CRITICAL: update nodes FIRST, then links — D3 resolves link sources against node map
+    try {
+      simulationRef.current.nodes(graphData.nodes);
+      (simulationRef.current.force('link') as d3.ForceLink<GraphNode, GraphLink>).links(graphData.links);
+    } catch (e) {
+      // D3 may throw "node not found" on rapid graph updates — silently recover
+      console.warn('D3 graph update warning:', e);
+      return;
+    }
     simulationRef.current.on('tick', () => {
       mergedLinks
         .attr('x1', (d) => (d.source as GraphNode).x ?? 0)
