@@ -83,12 +83,12 @@ so the site resolves correctly at:
 ## Citation
 
 ```bibtex
-@misc{raf_demo_2026,
-  title        = {RAF Demo — Recursive Agent Framework},
-  author       = {Aventre Labs},
+@misc{vernon2026raf,
+  title        = {Recursive Agent Frameworks for Edge Intelligence: How an 8B Model Outperforms 70B on Mathematical Reasoning},
+  author       = {Vernon, Bennett},
   year         = {2026},
-  howpublished = {GitHub Pages},
-  url          = {https://aventre-labs.github.io/raf-demo/}
+  institution  = {Vanderbilt University},
+  howpublished = {Interactive Demo: \url{https://aventre-labs.github.io/raf-demo/}},
 }
 ```
 
@@ -98,4 +98,6 @@ MIT License
 
 ## Credits
 
-Built for public demonstration of the Recursive Agent Framework concept and its structured-reasoning performance advantages.
+- **Bennett Vernon** — Vanderbilt University, Department of Computer Science
+- **Inference** — [Taalas HC1 ASIC](https://taalas.com) via [ChatJimmy](https://chatjimmy.ai) (Llama 3.1 8B @ ~17,000 tok/s)
+- **Aventre Labs** — [github.com/aventre-labs](https://github.com/aventre-labs)
