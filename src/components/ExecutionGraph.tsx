@@ -33,7 +33,16 @@ export function ExecutionGraph({ nodes, links }: Props) {
   const zoomLayerRef = useRef<SVGGElement | null>(null);
   const initializedRef = useRef(false);
 
-  const graphData = useMemo(() => ({ nodes, links }), [nodes, links]);
+  const graphData = useMemo(() => {
+    // Filter out links that reference nodes not yet in the graph (prevents D3 crash)
+    const nodeIds = new Set(nodes.map((n) => n.id));
+    const safeLinks = links.filter((l) => {
+      const src = typeof l.source === 'string' ? l.source : l.source.id;
+      const tgt = typeof l.target === 'string' ? l.target : l.target.id;
+      return nodeIds.has(src) && nodeIds.has(tgt);
+    });
+    return { nodes, links: safeLinks };
+  }, [nodes, links]);
 
   useEffect(() => {
     if (!svgRef.current || initializedRef.current) return;
